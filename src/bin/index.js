@@ -38,10 +38,10 @@ const diff = (file1, file2) => {
     }
   });
 
-  result = result.concat('}\n');
+  result = result.concat('}');
   return result;
 };
 
 export default diff;
 
-console.log(diff('file1.json', 'file2.json'));
+// console.log(diff('../../__fixtures__/file1.json', '../../__fixtures__/file2.json'));
