@@ -12,24 +12,34 @@ const diff = (file1, file2) => {
   const obj1 = JSON.parse(data1);
   const obj2 = JSON.parse(data2);
 
-  const arrayFile1 = [];
-  const arrayFile2 = [];
+  const objKeys1 = Object.keys(obj1);
+  const objKeys2 = Object.keys(obj2);
 
-  _.forIn(obj1, (value, key) => arrayFile1.push(`${key}: ${value}`));
-  _.forIn(obj2, (value, key) => arrayFile2.push(`${key}: ${value}`));
+  const arraySumSorted = _.sortBy(_.uniq([...objKeys1, ...objKeys2]));
 
-  const arraySum = [...arrayFile1, ...arrayFile2].sort();
-  const arraySumSorted = _.sortedUniqBy(arraySum);
+  const hasProperty = (o, p) => Object.prototype.hasOwnProperty.call(o, p);
 
-  const result = arraySumSorted.map((item) => {
-    if (arrayFile1.includes(item) && arrayFile2.includes(item)) {
-      return `  ${item}`;
-    } if (arrayFile1.includes(item)) {
-      return `- ${item}`;
+  let result = '{\n';
+
+  arraySumSorted.forEach((p) => {
+    if (hasProperty(obj1, p) && hasProperty(obj2, p)) {
+      if (obj1[p] === obj2[p]) {
+        result += `    ${p}: ${obj1[p]}\n`;
+      } else {
+        result += `  - ${p}: ${obj1[p]}\n`;
+        result += `  + ${p}: ${obj2[p]}\n`;
+      }
     }
-    return `+ ${item}`;
+    if (hasProperty(obj1, p) && !hasProperty(obj2, p)) {
+      result += `  - ${p}: ${obj1[p]}\n`;
+    }
+    if (!hasProperty(obj1, p) && hasProperty(obj2, p)) {
+      result += `  + ${p}: ${obj2[p]}\n`;
+    }
   });
-  return result.join('\n');
+
+  result = result.concat('}\n');
+  return result;
 };
 
 export default diff;
