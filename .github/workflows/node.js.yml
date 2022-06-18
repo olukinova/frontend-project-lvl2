@@ -20,21 +20,29 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Check out code
+      uses: actions/checkout@v3
+
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: make install
-    - run: make lint
-    - run: make test
 
-   - name: Test & publish code coverage
-        uses: paambaati/codeclimate-action@v3.0.0
-        env:
-          CC_TEST_REPORTER_ID: ${{secrets.HEXLET_ID}}
-        with:
-          coverageCommand: make test-coverage
-          debug: true
+    - name: Install
+      run: make install
+
+    - name: Lint
+      run: make lint
+
+    - name: Test
+      run: make test
+
+    - name: Test & publish code coverage
+      uses: paambaati/codeclimate-action@v3.0.0
+      env: 
+        CC_TEST_REPORTER_ID: ${{secrets.HEXLET_ID}}
+      with:
+        coverageCommand: make test-coverage
+        debug: true
 
