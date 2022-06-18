@@ -38,10 +38,15 @@ jobs:
     - name: Test
       run: make test
 
+    - name: Test ENV
+      env:
+        CC_TEST_REPORTER_ID: ${{ secrets.HEXLET_ID }}
+      run: echo $CC_TEST_REPORTER_ID
+      
     - name: Test & publish code coverage
       uses: paambaati/codeclimate-action@v3.0.0
-      env: 
-        CC_TEST_REPORTER_ID: ${{secrets.HEXLET_ID}}
+      env:
+        CC_TEST_REPORTER_ID: ${{ secrets.HEXLET_ID }}
       with:
         coverageCommand: make test-coverage
         debug: true
