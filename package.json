@@ -8,7 +8,7 @@
     "gendiff": "src/bin/gendiff.js"
   },
   "scripts": {
-    "test":  "npx -n --experimental-vm-modules jest"
+    "test": "npx -n --experimental-vm-modules jest"
   },
   "repository": {
     "type": "git",
@@ -28,7 +28,7 @@
   "homepage": "https://github.com/olukinova/frontend-project-lvl2#readme",
   "dependencies": {
     "commander": "^9.3.0",
-    "loadsh": "^0.0.4",
+    "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",
     "path": "^0.12.7"
   },
