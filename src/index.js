@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import path from 'path';
 import _ from 'lodash';
-import parseFile from './parsers.js'
+import parseFile from './parsers.js';
 
 const diff = (file1, file2) => {
   const filePath1 = path.resolve(process.cwd(), file1).trim();
