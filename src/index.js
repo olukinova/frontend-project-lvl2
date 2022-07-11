@@ -1,48 +1,27 @@
 import { readFileSync } from 'fs';
 import path from 'path';
-import _ from 'lodash';
+import buildDifference from './treeBuilder.js';
 import parseFile from './parsers.js';
+import stylish from './formatters/fileFormatters.js';
 
-const diff = (file1, file2) => {
-  const filePath1 = path.resolve(process.cwd(), file1).trim();
-  const filePath2 = path.resolve(process.cwd(), file2).trim();
+const getAbsoluteFilePath = (file) => path.resolve(process.cwd(), file).trim();
+// console.log(getAbsoluteFilePath('../__fixtures__/file1.json'));
+const getFileExtensions = (file) => path.extname(file).slice(1);
 
-  const data1 = readFileSync(filePath1, 'utf8');
-  const data2 = readFileSync(filePath2, 'utf8');
-
-  const obj1 = parseFile(data1, path.extname(filePath1));
-  const obj2 = parseFile(data2, path.extname(filePath2));
-
-  const objKeys1 = Object.keys(obj1);
-  const objKeys2 = Object.keys(obj2);
-
-  const arraySumSorted = _.sortBy(_.uniq([...objKeys1, ...objKeys2]));
-
-  const hasProperty = (o, p) => Object.prototype.hasOwnProperty.call(o, p);
-
-  let result = '{\n';
-
-  arraySumSorted.forEach((p) => {
-    if (hasProperty(obj1, p) && hasProperty(obj2, p)) {
-      if (obj1[p] === obj2[p]) {
-        result += `    ${p}: ${obj1[p]}\n`;
-      } else {
-        result += `  - ${p}: ${obj1[p]}\n`;
-        result += `  + ${p}: ${obj2[p]}\n`;
-      }
-    }
-    if (hasProperty(obj1, p) && !hasProperty(obj2, p)) {
-      result += `  - ${p}: ${obj1[p]}\n`;
-    }
-    if (!hasProperty(obj1, p) && hasProperty(obj2, p)) {
-      result += `  + ${p}: ${obj2[p]}\n`;
-    }
-  });
-
-  result = result.concat('}');
-  return result;
+const getFileContent = (file) => {
+  const filePath = getAbsoluteFilePath(file);
+  const fileContent = readFileSync(filePath, 'utf8');
+  const fileExtension = getFileExtensions(file);
+  return parseFile(fileContent, fileExtension);
 };
 
-export default diff;
+const genDiff = (filePath1, filePath2, format = 'stylish') => {
+  const file1 = getFileContent(filePath1);
+  const file2 = getFileContent(filePath2);
+  const diffInfo = buildDifference(file1, file2);
+  return stylish(diffInfo,format, '    ');
+};
 
-// console.log(diff('../../__fixtures__/file1.json', '../../__fixtures__/file2.json'));
+export default genDiff;
+
+// console.log(genDiff('../__fixtures__/file1.json', '../__fixtures__/file2.json'));

@@ -1,12 +1,12 @@
 import { load } from 'js-yaml';
 
-const parseFile = (text, extension) => {
-  switch (extension) {
-    case '.yaml':
-    case '.yml':
-      return load(text);
-    case '.json':
-      return JSON.parse(text);
+const parseFile = (fileContent, fileExtension) => {
+  switch (fileExtension) {
+    case 'yaml':
+    case 'yml':
+      return load(fileContent);
+    case 'json':
+      return JSON.parse(fileContent);
     default:
       throw Error('Parameters in not an support extension!');
   }

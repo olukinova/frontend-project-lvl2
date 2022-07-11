@@ -1,42 +1,34 @@
 import _ from 'lodash';
 
 const stringify = (data, depth, replacer) => {
-// если данные не являются объектом - возвращаем данные
   if (!_.isObject(data)) {
     return `${data}`;
   }
-
-  const indentForProp = replacer.repeat(depth + 1); //replacer для строки
-  const indentForBracket = replacer.repeat(depth); //replacer для скобки
-  const element = Object.entries(data)
-    .map(([key, value]) => `${indentForProp}${key}: ${stringify(value, depth + 1, replacer)}`);
-
-  return ['{', ...element, `${indentForBracket}}`].join('\n'); //формируем строку в массив, объединяем и упаковываем ее в фигурные скобки 
+  const keyIndent = replacer.repeat(depth + 1);
+  const bracketIndent = replacer.repeat(depth);
+  const lines = Object.entries(data).map(([key, value]) => `${keyIndent}${key}: ${stringify(value, depth + 1, replacer)}`);
+  return ['{', ...lines, `${bracketIndent}}`].join('\n');
 };
-
-const sign = {
+const symbol = {
   added: '+',
   deleted: '-',
-  unchanged: ' ',
+  notChanged: ' ',
 };
-
 const makeStylish = (diff, replacer = '    ') => {
   const iter = (tree, depth) => tree.map((node) => {
     const indent = replacer.repeat(depth);
-    const indentForSign = indent.slice(2);
-
-    const makeLine = (value, mark) => `${indentForSign}${mark} ${node.key}: ${stringify(value, depth, replacer)}`;
-
+    const signIndent = indent.slice(2);
+    const makeString = (value, sign) => `${signIndent}${sign} ${node.key}: ${stringify(value, depth, replacer)}`;
     switch (node.state) {
       case 'added':
-        return makeLine(node.value, sign.added);
+        return makeString(node.value, symbol.added);
       case 'deleted':
-        return makeLine(node.value, sign.deleted);
+        return makeString(node.value, symbol.deleted);
       case 'notChanged':
-        return makeLine(node.value, sign.unchanged);
+        return makeString(node.value, symbol.notChanged);
       case 'changed':
-        return [`${makeLine(node.value1, sign.deleted)}`,
-          `${makeLine(node.value2, sign.added)}`].join('\n');
+        return [`${makeString(node.value1, symbol.deleted)}`,
+          `${makeString(node.value2, symbol.added)}`].join('\n');
       case 'nested':
         return `${indent}${node.key}: ${['{', ...iter(node.value, depth + 1), `${indent}}`].join('\n')}`;
       default:
